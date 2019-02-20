@@ -8,6 +8,7 @@ import reconcile.gql as gql
 import reconcile.github_org
 import reconcile.openshift_rolebinding
 import reconcile.openshift_resources
+import reconcile.openshift_resources_annotate
 import reconcile.quay_membership
 import reconcile.quay_repos
 import reconcile.ldap_users
@@ -86,3 +87,14 @@ def quay_repos(ctx):
 @click.pass_context
 def ldap_users(ctx):
     run_integration(reconcile.ldap_users.run, ctx.obj['dry_run'])
+
+
+@integration.command()
+@click.argument('cluster')
+@click.argument('namespace')
+@click.argument('kind')
+@click.argument('name')
+@click.pass_context
+def openshift_resources_annotate(ctx, cluster, namespace, kind, name):
+    run_integration(reconcile.openshift_resources_annotate.run,
+                    ctx.obj['dry_run'], cluster, namespace, kind, name)
