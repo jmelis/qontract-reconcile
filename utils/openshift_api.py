@@ -1,7 +1,7 @@
 from utils.jump_host import (JumpHostSSHRestApi,
                              DummySSHServer,
                              HTTPStatusCodeError)
-
+import json
 
 class OpenshiftRestApi(object):
     """A class to simply Openshift API"""
@@ -56,11 +56,18 @@ class OpenshiftRestApi(object):
 
         if not kwargs.get('headers'):
             kwargs['headers'] = self.headers.copy()
-
         else:
             headers = self.headers.copy()
             headers.update(kwargs['headers'])
             kwargs['headers'] = headers
+
+        if isinstance(self.get_ssh_server(), JumpHostSSHRestApi):
+            # JumpHostSSHRestApi will use `curl` instead of `requests`, so it
+            # doesn't support `json` header
+            if 'json' in headers:
+                json_data = headers.pop('json')
+                headers['data'] = json.dumps(json_data)
+                headers['Content-type'] = 'application/json'
 
         with self.get_ssh_server() as server:
             method = getattr(server, method_name)
