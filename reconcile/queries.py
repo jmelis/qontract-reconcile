@@ -1519,3 +1519,35 @@ OCP_RELEASE_ECR_MIRROR_QUERY = """
 def get_ocp_release_ecr_mirror():
     gqlapi = gql.get_api()
     return gqlapi.query(OCP_RELEASE_ECR_MIRROR_QUERY)['ocp_release_ecr_mirror']
+
+
+QUAY_REPOS_QUERY = """
+{
+  apps: apps_v1 {
+    quayRepos {
+      org {
+        name
+        serverUrl
+      }
+      items {
+        name
+        public
+        mirror {
+          url
+          pullCredentials {
+            path
+            field
+          }
+          tags
+          tagsExclude
+        }
+      }
+    }
+  }
+}
+"""
+
+
+def get_quay_repos():
+    gqlapi = gql.get_api()
+    return gqlapi.query(QUAY_REPOS_QUERY)['apps']
